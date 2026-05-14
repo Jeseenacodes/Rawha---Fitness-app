@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rawha — Feel lighter every day.</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FDF8F2;
+    --peach: #F4A87C;
+    --peach-light: #FDE8D8;
+    --blush: #E8A0A0;
+    --blush-light: #FCEAEA;
+    --lavender: #B8A4D4;
+    --lavender-light: #EDE8F7;
+    --sage: #8BAF8B;
+    --sage-light: #E4EFE4;
+    --text-dark: #3D2B2B;
+    --text-mid: #6B4F4F;
+    --text-light: #9B7F7F;
+    --white: #FFFFFF;
+    --shadow: 0 4px 20px rgba(100,60,60,0.10);
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .screen {
+    display: none;
+    width: 100%;
+    max-width: 440px;
+    animation: fadeIn 0.3s ease;
+  }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 32px 28px;
+    margin-bottom: 16px;
+  }
+
+  .app-logo {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .logo-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--peach-light), var(--lavender-light));
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text-dark);
+    text-align: center;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--text-mid);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+
+  .today-banner {
+    background: var(--sage-light);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .today-banner .label { font-size: 13px; color: var(--sage); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .today-stats { display: flex; gap: 20px; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 700; color: var(--text-dark); line-height: 1; }
+  .stat-lbl { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.12s, opacity 0.12s;
+    letter-spacing: 0.2px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--peach); color: white; }
+  .btn-primary:hover { opacity: 0.92; }
+  .btn-secondary { background: var(--lavender-light); color: var(--lavender); }
+  .btn-secondary:hover { opacity: 0.85; }
+  .btn-ghost { background: transparent; color: var(--text-mid); border: 1.5px solid #E0D0D0; }
+  .btn-ghost:hover { background: var(--cream); }
+  .btn-sage { background: var(--sage); color: white; }
+  .btn-sage:hover { opacity: 0.92; }
+  .btn-danger { background: var(--blush-light); color: var(--blush); }
+  .btn-danger:hover { opacity: 0.85; }
+
+  .btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .progress-section { margin: 20px 0; }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .progress-label { font-size: 13px; color: var(--text-mid); font-weight: 500; }
+  .progress-count { font-size: 13px; color: var(--peach); font-weight: 700; }
+  .progress-bar-track {
+    height: 10px;
+    background: var(--peach-light);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--peach), var(--blush));
+    border-radius: 999px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .next-up-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--sage-light);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 16px;
+  }
+  .next-up-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .next-up-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: var(--sage);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .next-up-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-mid);
+    line-height: 1.2;
+  }
+  .next-up-name.soft { color: var(--text-light); font-style: italic; font-weight: 400; }
+
+  .exercise-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .exercise-number {
+    background: var(--peach-light);
+    color: var(--peach);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  .exercise-name {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .exercise-hint { font-size: 14px; color: var(--text-light); }
+
+  .timer-ring {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 24px 0;
+  }
+  .timer-circle {
+    position: relative;
+    width: 160px; height: 160px;
+  }
+  .timer-circle svg { transform: rotate(-90deg); }
+  .timer-circle .track { fill: none; stroke: var(--peach-light); stroke-width: 10; }
+  .timer-circle .fill { fill: none; stroke: var(--peach); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+  .timer-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .timer-seconds { font-size: 48px; font-weight: 700; color: var(--text-dark); line-height: 1; }
+  .timer-unit { font-size: 13px; color: var(--text-light); font-weight: 500; }
+
+  .repeat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--lavender-light);
+    color: var(--lavender);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-top: 12px;
+  }
+
+  /* ── Break screen ── */
+  #screen-break .card {
+    background: linear-gradient(160deg, #F0ECF9 0%, #E8F4EE 100%);
+  }
+  .break-screen-inner { text-align: center; padding: 10px 0 20px; }
+
+  .break-breathe {
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #DDD1F0 0%, #B8A4D4 100%);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    animation: breathePulse 4s ease-in-out infinite;
+    margin-bottom: 16px;
+  }
+  @keyframes breathePulse {
+    0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0   rgba(184,164,212,0.45); }
+    50%       { transform: scale(1.13); box-shadow: 0 0 0 16px rgba(184,164,212,0);   }
+  }
+
+  .break-title { font-size: 21px; font-weight: 700; color: var(--text-dark); }
+  .break-sub   { font-size: 14px; color: var(--text-mid); margin-top: 5px; line-height: 1.5; }
+
+  .break-ring {
+    position: relative;
+    width: 144px; height: 144px;
+    margin: 22px auto 0;
+  }
+  .break-ring svg { transform: rotate(-90deg); }
+  .break-ring .b-track { fill: none; stroke: rgba(184,164,212,0.22); stroke-width: 10; }
+  .break-ring .b-fill  {
+    fill: none; stroke: var(--lavender); stroke-width: 10; stroke-linecap: round;
+    stroke-dasharray: 408.41;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear;
+  }
+  .break-ring-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .break-ring-num  { font-size: 46px; font-weight: 700; color: var(--lavender); line-height: 1; }
+  .break-ring-unit { font-size: 12px; color: var(--text-light); font-weight: 500; margin-top: 2px; }
+
+  .next-exercise-card {
+    margin: 20px 0 16px;
+    background: rgba(255,255,255,0.72);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    border: 1.5px dashed rgba(184,164,212,0.6);
+  }
+  .next-ex-label { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--lavender); margin-bottom: 5px; }
+  .next-ex-name  { font-size: 20px; font-weight: 700; color: var(--text-dark); }
+
+  /* ── Summary screen ── */
+  #screen-summary .card { text-align: center; }
+  .confetti-row { font-size: 34px; margin-bottom: 8px; letter-spacing: 4px; animation: popIn 0.6s ease both; }
+  @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .summary-title { font-size: 26px; font-weight: 700; color: var(--text-dark); }
+  .summary-message { color: var(--text-mid); font-size: 15px; margin-top: 8px; line-height: 1.6; }
+  .summary-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 22px 0 18px;
+  }
+  .summary-stat-card {
+    background: var(--cream);
+    border-radius: var(--radius-sm);
+    padding: 14px 8px;
+    text-align: center;
+  }
+  .summary-stat-num { font-size: 30px; font-weight: 700; color: var(--peach); }
+  .summary-stat-lbl { font-size: 11px; color: var(--text-mid); margin-top: 4px; line-height: 1.3; }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 0;
+  }
+  .chip {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--sage-light);
+    color: var(--sage);
+  }
+
+  .duration-toggle {
+    display: flex;
+    background: var(--peach-light);
+    border-radius: 999px;
+    padding: 4px;
+    gap: 4px;
+    margin: 18px 0 4px;
+  }
+  .duration-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    color: var(--peach);
+    transition: background 0.2s, color 0.2s;
+  }
+  .duration-btn.active {
+    background: var(--peach);
+    color: white;
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 24px 18px; }
+    h1 { font-size: 26px; }
+    .exercise-name { font-size: 24px; }
+    .timer-seconds { font-size: 42px; }
+  }
+
+  /* ── Smooth screen transitions ── */
+  .screen { transition: opacity 0.35s ease; }
+  .screen.fading { opacity: 0; pointer-events: none; }
+
+  /* ── Timer gentle pulse ── */
+  @keyframes timerPulse {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.04); }
+  }
+  .timer-circle.pulsing { animation: timerPulse 1.8s ease-in-out infinite; }
+
+  /* ── Progress bar shimmer ── */
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+  .progress-bar-fill {
+    background-size: 200% auto;
+    background-image: linear-gradient(90deg, var(--peach) 0%, var(--blush) 40%, #F9C5A0 60%, var(--peach) 100%);
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* ── Floating bubbles on break screen ── */
+  .bubbles-wrap {
+    position: relative; height: 60px; overflow: hidden;
+    margin: 10px 0 0; pointer-events: none;
+  }
+  .bubble {
+    position: absolute; bottom: -20px;
+    border-radius: 50%; opacity: 0;
+    animation: floatUp 5s ease-in infinite;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0)   scale(0.6); opacity: 0; }
+    15%  { opacity: 0.55; }
+    85%  { opacity: 0.3; }
+    100% { transform: translateY(-70px) scale(1.1); opacity: 0; }
+  }
+
+  /* ── Summary celebration burst ── */
+  @keyframes celebBurst {
+    0%   { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+    60%  { transform: scale(1.1) rotate(4deg);  opacity: 1; }
+    100% { transform: scale(1)   rotate(0deg);  opacity: 1; }
+  }
+  .confetti-row { animation: celebBurst 0.7s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+  /* ── Sound picker ── */
+  .sound-section { margin-top: 18px; }
+  .sound-section-label {
+    font-size: 13px; font-weight: 700; color: var(--text-mid);
+    text-align: center; letter-spacing: 0.4px; margin-bottom: 10px;
+  }
+  .sound-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
+  }
+  .sound-chip {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; padding: 10px 6px; border-radius: var(--radius-sm);
+    border: 1.5px solid #E8DDD8; background: var(--cream);
+    cursor: pointer; font-size: 11px; font-weight: 600; color: var(--text-mid);
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    text-align: center; line-height: 1.2;
+  }
+  .sound-chip span { font-size: 22px; }
+  .sound-chip:hover { background: var(--peach-light); border-color: var(--peach); }
+  .sound-chip.active { background: var(--peach-light); border-color: var(--peach); color: var(--peach); }
+  .sound-chip:active { transform: scale(0.95); }
+
+  .sound-none-btn {
+    margin-top: 8px; width: 100%; padding: 9px; border-radius: var(--radius-sm);
+    border: 1.5px dashed #D4C8C8; background: transparent;
+    font-size: 13px; color: var(--text-light); cursor: pointer;
+    transition: background 0.15s;
+  }
+  .sound-none-btn:hover { background: var(--cream); }
+  .sound-none-btn.active { border-color: var(--text-mid); color: var(--text-mid); font-weight: 600; }
+
+  /* ── In-workout sound bar ── */
+  .sound-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--lavender-light); border-radius: var(--radius-sm);
+    padding: 8px 14px; margin-bottom: 12px; gap: 10px;
+  }
+  .sound-bar-name { font-size: 13px; color: var(--lavender); font-weight: 600; flex: 1; }
+  .sound-toggle-btn {
+    background: var(--lavender); color: white;
+    border: none; border-radius: 999px;
+    padding: 5px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .sound-toggle-btn:hover { opacity: 0.85; }
+
+  /* ── Voice coach toast ── */
+  .voice-toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: rgba(61,43,43,0.82); color: #fff;
+    padding: 10px 22px; border-radius: 999px;
+    font-size: 14px; font-weight: 500;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    white-space: nowrap; max-width: 90vw; text-align: center;
+    backdrop-filter: blur(4px); z-index: 999;
+  }
+  .voice-toast.show {
+    opacity: 1; transform: translateX(-50%) translateY(0);
+  }
+
+
+  .tagline {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--peach);
+    letter-spacing: 0.8px;
+    margin-top: 6px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="voice-toast" id="voice-toast"></div>
+
+<!-- HOME SCREEN -->
+<div class="screen active" id="screen-home">
+  <div class="card">
+    <div class="app-logo">
+      <div class="logo-icon">🌸</div>
+      <h1>Rawha</h1>
+      <p class="tagline">Feel lighter every day.</p>
+      <p class="subtitle">Short, gentle movements for every mom.<br>13 moves · 30 seconds each · You've got this.</p>
+    </div>
+
+    <div class="today-banner">
+      <div class="label">Today</div>
+      <div class="today-stats">
+        <div class="stat">
+          <div class="stat-num" id="home-completed">0</div>
+          <div class="stat-lbl">Completed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="home-repeats">0</div>
+          <div class="stat-lbl">Repeats</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-header">
+        <span class="progress-label">Today's progress</span>
+        <span class="progress-count" id="home-progress-label">0 / 13</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="home-progress-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="sound-section">
+      <div class="sound-section-label">🎵 Choose Your Calm</div>
+      <div class="sound-grid">
+        <button class="sound-chip" data-sound="rain" onclick="selectSound('rain')">
+          <span>🌧️</span>Rain
+        </button>
+        <button class="sound-chip" data-sound="ocean" onclick="selectSound('ocean')">
+          <span>🌊</span>Ocean
+        </button>
+        <button class="sound-chip" data-sound="forest" onclick="selectSound('forest')">
+          <span>🌲</span>Forest
+        </button>
+        <button class="sound-chip" data-sound="piano" onclick="selectSound('piano')">
+          <span>🎹</span>Soft Piano
+        </button>
+        <button class="sound-chip" data-sound="lofi" onclick="selectSound('lofi')">
+          <span>🎧</span>Lo-fi
+        </button>
+        <button class="sound-chip" data-sound="birds" onclick="selectSound('birds')">
+          <span>🐦</span>Birdsong
+        </button>
+      </div>
+      <button class="sound-none-btn active" id="sound-none-btn" onclick="selectSound(null)">🔇 No sound — just movement</button>
+    </div>
+
+    <p style="font-size:13px;color:var(--text-light);text-align:center;margin-top:4px;">How long per exercise?</p>
+    <div class="duration-toggle">
+      <button class="duration-btn active" id="dur-30" onclick="setDuration(30)">30 sec</button>
+      <button class="duration-btn" id="dur-60" onclick="setDuration(60)">60 sec</button>
+    </div>
+
+    <button class="btn btn-primary" id="btn-start-home" style="margin-top:14px;">Begin Your Session 🌿</button>
+  </div>
+</div>
+
+<!-- EXERCISE SCREEN -->
+<div class="screen" id="screen-exercise">
+  <div class="card">
+    <div style="text-align:center;font-size:13px;font-weight:700;letter-spacing:1px;color:var(--peach);text-transform:uppercase;margin-bottom:14px;opacity:0.8;">✦ Rawha</div>
+    <div class="sound-bar" id="sound-bar" style="display:none">
+      <span class="sound-bar-name" id="sound-bar-name">🎵 Rain</span>
+      <button class="sound-toggle-btn" id="sound-toggle-btn" onclick="toggleSound()">⏸ Pause</button>
+    </div>
+    <div class="next-up-strip" id="next-up-strip">
+      <div class="next-up-icon">👉</div>
+      <div>
+        <div class="next-up-label">Next up</div>
+        <div class="next-up-name" id="next-up-name">—</div>
+      </div>
+    </div>
+    <div class="exercise-header">
+      <span class="exercise-number" id="ex-number">1 / 13</span>
+    </div>
+    <div class="exercise-name" id="ex-name">Lymph Hops</div>
+    <div class="exercise-hint">Move gently at your own pace</div>
+    <div id="ex-duration-label" style="font-size:13px;color:var(--peach);font-weight:600;margin-top:4px;">30 sec per exercise</div>
+
+    <div class="progress-section" style="margin-top:16px;">
+      <div class="progress-header">
+        <span class="progress-label">Overall progress</span>
+        <span class="progress-count" id="ex-progress-label">0 / 13</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="ex-progress-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="timer-ring">
+      <div class="timer-circle" id="timer-circle">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle class="track" cx="80" cy="80" r="70"></circle>
+          <circle class="fill" id="timer-arc" cx="80" cy="80" r="70"
+            stroke-dasharray="439.82"
+            stroke-dashoffset="0"></circle>
+        </svg>
+        <div class="timer-text">
+          <div class="timer-seconds" id="timer-display">30</div>
+          <div class="timer-unit">seconds</div>
+        </div>
+      </div>
+      <div class="repeat-badge" id="repeat-badge" style="display:none">🔁 Repeated <span id="repeat-count">1</span>x</div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-pause" style="margin-bottom:10px;">⏸ Pause</button>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="btn-repeat">🔁 Repeat</button>
+      <button class="btn btn-sage" id="btn-next">Next ➜</button>
+    </div>
+    <div style="margin-top:10px;">
+      <button class="btn btn-ghost" id="btn-finish-early">Finish Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- BREAK SCREEN -->
+<div class="screen" id="screen-break">
+  <div class="card">
+    <div class="break-screen-inner">
+      <div class="break-breathe">🌿</div>
+      <div class="break-title">Take a 20-second break</div>
+      <div class="break-sub">Breathe in… breathe out. You're doing amazing.</div>
+
+      <div class="break-ring">
+        <svg width="144" height="144" viewBox="0 0 144 144">
+          <circle class="b-track" cx="72" cy="72" r="65"></circle>
+          <circle class="b-fill"  id="break-arc" cx="72" cy="72" r="65"></circle>
+        </svg>
+        <div class="break-ring-text">
+          <div class="break-ring-num" id="break-timer-display">20</div>
+          <div class="break-ring-unit">seconds</div>
+        </div>
+      </div>
+
+      <div class="next-exercise-card">
+        <div class="next-ex-label">Up next</div>
+        <div class="next-ex-name" id="break-next-name">—</div>
+      </div>
+
+
+      <div class="bubbles-wrap" aria-hidden="true">
+        <div class="bubble" style="width:14px;height:14px;left:12%;background:rgba(184,164,212,0.35);animation-delay:0s;animation-duration:4.8s;"></div>
+        <div class="bubble" style="width:10px;height:10px;left:30%;background:rgba(139,175,139,0.30);animation-delay:0.8s;animation-duration:5.2s;"></div>
+        <div class="bubble" style="width:18px;height:18px;left:52%;background:rgba(244,168,124,0.25);animation-delay:1.5s;animation-duration:4.5s;"></div>
+        <div class="bubble" style="width:11px;height:11px;left:70%;background:rgba(184,164,212,0.38);animation-delay:0.4s;animation-duration:5.5s;"></div>
+        <div class="bubble" style="width:15px;height:15px;left:86%;background:rgba(139,175,139,0.28);animation-delay:2s;animation-duration:4.2s;"></div>
+      </div>
+      <button class="btn btn-primary" id="btn-skip-break" style="margin-top:4px;">Skip Break ➜</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY SCREEN -->
+<div class="screen" id="screen-summary">
+  <div class="card">
+    <div class="confetti-row">🌸 🌟 🌿</div>
+    <div class="summary-title">You did it!</div>
+    <div class="summary-message" id="summary-message">Great job! You showed up for yourself today.</div>
+
+    <div class="summary-stats">
+      <div class="summary-stat-card">
+        <div class="summary-stat-num" id="sum-completed">0</div>
+        <div class="summary-stat-lbl">Exercises<br>completed</div>
+      </div>
+      <div class="summary-stat-card" style="background:var(--lavender-light);">
+        <div class="summary-stat-num" style="color:var(--lavender)" id="sum-repeats">0</div>
+        <div class="summary-stat-lbl">Repeats<br>added</div>
+      </div>
+      <div class="summary-stat-card" style="background:var(--sage-light);">
+        <div class="summary-stat-num" style="color:var(--sage); font-size:22px; padding-top:4px;" id="sum-time">0:00</div>
+        <div class="summary-stat-lbl">Total<br>workout time</div>
+      </div>
+    </div>
+
+    <div id="sum-exercises-done" class="chip-row" style="margin-bottom:22px; justify-content:center;"></div>
+
+    <button class="btn btn-primary" id="btn-restart" style="margin-bottom:10px;">Move Again 🌸</button>
+    <button class="btn btn-ghost" id="btn-go-home">Back to Home</button>
+  </div>
+</div>
+
+<script>
+const EXERCISES = [
+  "Lymph Hops","Body Waves","Arm Swings","Trunk Twist","Dead Arms",
+  "Golf Swing","Marches","Ballerina Squats","Bear Hugs",
+  "Horse Stance Lunges","Upper Slaps","Lower Slaps","Face Taps"
+];
+
+const ENCOURAGEMENTS = [
+  "You are stronger than you think, mama! 💪",
+  "Every rep is an act of self-love. 🌸",
+  "Your body thanks you for showing up today! 🌿",
+  "Small steps every day lead to big changes! ⭐",
+  "You inspire everyone around you. Keep glowing! ✨"
+];
+
+// ── Voice coaching phrases ──────────────────────────────────────────
+const VOICE_PROMPTS = [
+  "You're doing amazing 🌸",
+  "Take a deep breath",
+  "Small steps matter",
+  "Relax your shoulders",
+  "You showed up today — that counts",
+  "Keep moving gently",
+  "You are enough, just as you are",
+  "Feel each movement with care",
+  "Your body thanks you",
+  "One breath at a time"
+];
+const BREAK_PROMPTS = [
+  "Breathe in slowly… and out",
+  "You're halfway there — keep going",
+  "Feel your feet on the ground",
+  "Shake out your hands gently",
+  "A short rest makes you stronger"
+];
+
+let voiceToastTimer = null;
+function showVoiceToast(msg) {
+  const el = document.getElementById('voice-toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(voiceToastTimer);
+  voiceToastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// ── Ambient Sound Engine (Web Audio API oscillator + noise for offline) ──
+const SOUND_DEFS = {
+  rain:   { label: '🌧️ Rain',    color: '#a4c8e0' },
+  ocean:  { label: '🌊 Ocean',   color: '#6bbfd4' },
+  forest: { label: '🌲 Forest',  color: '#8BAF8B' },
+  piano:  { label: '🎹 Soft Piano', color: '#C4A8D4' },
+  lofi:   { label: '🎧 Lo-fi',   color: '#B8A4D4' },
+  birds:  { label: '🐦 Birdsong', color: '#a8c88b' }
+};
+
+let audioCtx = null;
+let soundNodes = [];   // currently playing nodes
+let selectedSound = null;
+let soundPlaying = false;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+// ── Shared helpers ────────────────────────────────────────────────────────────
+function makeWhiteNoise(ctx, seconds) {
+  const sr = ctx.sampleRate, len = sr * seconds;
+  const buf = ctx.createBuffer(2, len, sr);
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  }
+  const src = ctx.createBufferSource();
+  src.buffer = buf; src.loop = true;
+  return src;
+}
+
+function makePinkNoise(ctx, seconds) {
+  // Pink noise via Paul Kellet's approximation in the buffer itself
+  const sr = ctx.sampleRate, len = sr * seconds;
+  const buf = ctx.createBuffer(2, len, sr);
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < len; i++) {
+      const w = Math.random() * 2 - 1;
+      b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+      b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+      b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+      d[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
+      b6=w*0.115926;
+    }
+  }
+  const src = ctx.createBufferSource();
+  src.buffer = buf; src.loop = true;
+  return src;
+}
+
+function makeBrownNoise(ctx, seconds) {
+  const sr = ctx.sampleRate, len = sr * seconds;
+  const buf = ctx.createBuffer(2, len, sr);
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c); let last = 0;
+    for (let i = 0; i < len; i++) {
+      const w = Math.random() * 2 - 1;
+      last = (last + 0.02 * w) / 1.02;
+      d[i] = last * 3.5;
+    }
+  }
+  const src = ctx.createBufferSource();
+  src.buffer = buf; src.loop = true;
+  return src;
+}
+
+// ── Six distinct sound synthesisers ──────────────────────────────────────────
+function buildSoundGraph(type, vol) {
+  const ctx = getAudioCtx();
+  const master = ctx.createGain();
+  master.gain.setValueAtTime(vol, ctx.currentTime);
+  master.connect(ctx.destination);
+  const nodes = [master];
+  const t = ctx.currentTime;
+
+  // ── RAIN: high-density pink noise through a series of comb-like bandpass
+  //   filters and gentle rumble — distinctly "pattery" texture ─────────────
+  if (type === 'rain') {
+    const pink = makePinkNoise(ctx, 8);
+    pink.start(); nodes.push(pink);
+
+    // Main rain layer — two bandpass filters centred differently
+    const bp1 = ctx.createBiquadFilter();
+    bp1.type = 'bandpass'; bp1.frequency.value = 3000; bp1.Q.value = 0.4;
+    const bp2 = ctx.createBiquadFilter();
+    bp2.type = 'bandpass'; bp2.frequency.value = 6000; bp2.Q.value = 0.3;
+    const g1 = ctx.createGain(); g1.gain.value = 0.9;
+    const g2 = ctx.createGain(); g2.gain.value = 0.5;
+    pink.connect(bp1); bp1.connect(g1); g1.connect(master);
+    pink.connect(bp2); bp2.connect(g2); g2.connect(master);
+
+    // Heavy rain undertone — low-pass brown noise
+    const brown = makeBrownNoise(ctx, 6);
+    brown.start(); nodes.push(brown);
+    const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=400;
+    const gb = ctx.createGain(); gb.gain.value = 0.3;
+    brown.connect(lp); lp.connect(gb); gb.connect(master);
+
+    // Slow amplitude swell to simulate gusts
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.07; lfo.type='sine';
+    const lfoG = ctx.createGain(); lfoG.gain.value = 0.08;
+    lfo.connect(lfoG); lfoG.connect(master.gain);
+    lfo.start(); nodes.push(lfo);
+  }
+
+  // ── OCEAN: brown-noise swell shaped by a very slow LFO, producing that
+  //   rolling wave rhythm (~0.12 Hz), with high-frequency foam layer ────────
+  else if (type === 'ocean') {
+    const brown = makeBrownNoise(ctx, 10);
+    brown.start(); nodes.push(brown);
+
+    const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=520;
+    brown.connect(lp);
+
+    // Wave gain envelope — the key differentiator from rain
+    const waveGain = ctx.createGain(); waveGain.gain.value = 0;
+    lp.connect(waveGain); waveGain.connect(master);
+
+    const waveLFO = ctx.createOscillator();
+    waveLFO.frequency.value = 0.12; waveLFO.type = 'sine';
+    const waveDepth = ctx.createGain(); waveDepth.gain.value = 0.55;
+    waveLFO.connect(waveDepth); waveDepth.connect(waveGain.gain);
+    waveGain.gain.setValueAtTime(0.55, t);
+    waveLFO.start(); nodes.push(waveLFO);
+
+    // A second slower swell (0.07 Hz) for long wave feel
+    const swell = ctx.createOscillator(); swell.frequency.value=0.07; swell.type='sine';
+    const swellG = ctx.createGain(); swellG.gain.value = 0.3;
+    swell.connect(swellG); swellG.connect(waveGain.gain);
+    swell.start(); nodes.push(swell);
+
+    // High-frequency foam/hiss on top
+    const white = makeWhiteNoise(ctx, 5); white.start(); nodes.push(white);
+    const hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=4000;
+    const gw = ctx.createGain(); gw.gain.value=0.05;
+    white.connect(hp); hp.connect(gw); gw.connect(master);
+  }
+
+  // ── FOREST: soft pink-noise floor (wind through trees) + scheduled
+  //   bird-chirp bursts (frequency-modulated sine, short ASR envelope) ──────
+  else if (type === 'forest') {
+    // Wind layer — very low pink noise
+    const pink = makePinkNoise(ctx, 8); pink.start(); nodes.push(pink);
+    const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=700;
+    const gp = ctx.createGain(); gp.gain.value=0.25;
+    pink.connect(lp); lp.connect(gp); gp.connect(master);
+
+    // Wind sway LFO
+    const windLFO = ctx.createOscillator(); windLFO.frequency.value=0.05;
+    const wg = ctx.createGain(); wg.gain.value=0.08;
+    windLFO.connect(wg); wg.connect(gp.gain);
+    windLFO.start(); nodes.push(windLFO);
+
+    // Distant cricket/insect layer — bandpass on white noise
+    const bugs = makeWhiteNoise(ctx,4); bugs.start(); nodes.push(bugs);
+    const bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=5500; bp.Q.value=8;
+    const gb = ctx.createGain(); gb.gain.value=0.04;
+    bugs.connect(bp); bp.connect(gb); gb.connect(master);
+
+    // Scheduled bird chirps: FM sine bursts
+    function chirp(when, freqHz, dur, amp) {
+      const osc = ctx.createOscillator(); osc.type='sine';
+      osc.frequency.setValueAtTime(freqHz, when);
+      osc.frequency.linearRampToValueAtTime(freqHz*1.35, when+dur*0.3);
+      osc.frequency.linearRampToValueAtTime(freqHz*0.9,  when+dur);
+      const eg = ctx.createGain(); eg.gain.setValueAtTime(0, when);
+      eg.gain.linearRampToValueAtTime(amp, when+0.03);
+      eg.gain.setTargetAtTime(0, when+dur*0.5, dur*0.25);
+      osc.connect(eg); eg.connect(master);
+      osc.start(when); osc.stop(when+dur+0.1);
+      // NOTE: do NOT push to nodes — these are self-cleaning one-shots
+    }
+    // Schedule chirps for 30 seconds, then repeat via setInterval
+    function scheduleChirps() {
+      const now = ctx.currentTime;
+      const patterns=[
+        [0,    2200,0.15,0.18],[0.18, 2400,0.12,0.14],[0.32, 2600,0.10,0.10],
+        [2.1,  1800,0.20,0.15],[2.35, 2000,0.15,0.12],
+        [5.4,  2800,0.10,0.12],[5.52, 3000,0.08,0.09],[5.62, 3200,0.08,0.08],
+        [9.0,  1600,0.25,0.14],[9.28, 1750,0.20,0.11],
+        [13.5, 2400,0.12,0.13],[13.65,2600,0.10,0.10],
+        [18.0, 3200,0.08,0.10],[18.10,3400,0.07,0.08],
+        [22.5, 2000,0.18,0.13],[22.72,2200,0.14,0.11],
+        [27.0, 2600,0.12,0.12],[27.14,2800,0.10,0.09],[27.26,3000,0.08,0.07],
+      ];
+      patterns.forEach(([dt,f,dur,amp]) => chirp(now+dt, f, dur, amp));
+    }
+    scheduleChirps();
+    const iv = setInterval(() => { if (!soundPlaying) { clearInterval(iv); return; } scheduleChirps(); }, 30000);
+    nodes._chirpInterval = iv;
+  }
+
+  // ── SOFT PIANO: plucked string simulation via Karplus-Strong algorithm
+  //   — completely different from all noise-based sounds ──────────────────
+  else if (type === 'piano') {
+    // Karplus-Strong: delay line synthesis for plucked string timbre
+    function pluck(freq, when, amp) {
+      const delayLen = Math.round(ctx.sampleRate / freq);
+      const bufLen = ctx.sampleRate * 2;
+      const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      // Seed delay line with noise
+      for (let i = 0; i < delayLen; i++) d[i] = (Math.random()*2-1)*amp;
+      // Low-pass average filter over the rest
+      for (let i = delayLen; i < bufLen; i++) {
+        d[i] = 0.495 * (d[i-delayLen] + d[i-delayLen+1 < bufLen ? i-delayLen+1 : 0]);
+      }
+      const src = ctx.createBufferSource(); src.buffer = buf;
+      const g = ctx.createGain(); g.gain.setValueAtTime(amp, when);
+      g.gain.setTargetAtTime(0, when+1.2, 0.6);
+      const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3200;
+      const rev = ctx.createConvolver();
+      // Very short impulse reverb
+      const rBuf = ctx.createBuffer(2,ctx.sampleRate*0.8,ctx.sampleRate);
+      for(let c=0;c<2;c++){const rd=rBuf.getChannelData(c);for(let i=0;i<rd.length;i++)rd[i]=(Math.random()*2-1)*Math.pow(1-i/rd.length,2)*0.3;}
+      rev.buffer=rBuf;
+      src.connect(lp); lp.connect(g); g.connect(rev); rev.connect(master);
+      src.start(when); src.stop(when+2.5);
+    }
+    // C major pentatonic notes in a gentle arpeggio pattern, looping ~16s
+    const notes = [261.6,293.7,329.6,392.0,440.0,523.3,587.3,659.3,784.0,880.0];
+    const melody = [
+      [0,0,0.7],[0.9,2,0.55],[1.7,4,0.65],[2.5,1,0.5],[3.3,5,0.6],
+      [4.8,3,0.7],[5.6,6,0.55],[6.4,2,0.5],[7.2,7,0.6],[8.0,4,0.55],
+      [9.5,1,0.65],[10.3,5,0.5],[11.1,3,0.6],[11.9,8,0.55],[12.7,6,0.5],
+      [14.2,0,0.7],[14.9,2,0.55],[15.4,4,0.5]
+    ];
+    function schedulePiano() {
+      const now = ctx.currentTime;
+      melody.forEach(([dt,ni,amp]) => pluck(notes[ni], now+dt+0.05, amp));
+    }
+    schedulePiano();
+    const iv = setInterval(()=>{ if(!soundPlaying){clearInterval(iv);return;} schedulePiano(); }, 16500);
+    nodes._chirpInterval = iv;
+    // Soft pad underneath
+    const pad = ctx.createOscillator(); pad.frequency.value=130.8; pad.type='sine';
+    const padG = ctx.createGain(); padG.gain.value=0.04;
+    const padLFO = ctx.createOscillator(); padLFO.frequency.value=0.03;
+    const padLG = ctx.createGain(); padLG.gain.value=0.02;
+    padLFO.connect(padLG); padLG.connect(padG.gain);
+    pad.connect(padG); padG.connect(master);
+    pad.start(); padLFO.start();
+    nodes.push(pad,padLFO);
+  }
+
+  // ── LO-FI: warm rhythmic pulse (kick + snare approximation) + mellow
+  //   chord pad — unmistakably beat-driven feeling ─────────────────────────
+  else if (type === 'lofi') {
+    // Kick: exponentially decaying sine burst ~90 BPM (0.667 s per beat)
+    function kick(when) {
+      const o = ctx.createOscillator(); o.type='sine';
+      o.frequency.setValueAtTime(180, when);
+      o.frequency.exponentialRampToValueAtTime(40, when+0.15);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.55, when);
+      g.gain.exponentialRampToValueAtTime(0.001, when+0.3);
+      o.connect(g); g.connect(master);
+      o.start(when); o.stop(when+0.35);
+    }
+    // Snare: filtered noise burst
+    function snare(when) {
+      const w = makeWhiteNoise(ctx, 0.2);
+      const bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1800; bp.Q.value=0.8;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.18, when);
+      g.gain.exponentialRampToValueAtTime(0.001, when+0.18);
+      w.connect(bp); bp.connect(g); g.connect(master);
+      w.start(when); w.stop(when+0.22);
+    }
+    // Hi-hat: high-pass noise
+    function hat(when) {
+      const w = makeWhiteNoise(ctx, 0.06);
+      const hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=10000;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.06, when);
+      g.gain.exponentialRampToValueAtTime(0.001, when+0.05);
+      w.connect(hp); hp.connect(g); g.connect(master);
+      w.start(when); w.stop(when+0.08);
+    }
+    // 2-bar pattern at 90 BPM → 1 bar = 2.667s
+    const bpm=90, beat=60/bpm, bar=beat*4;
+    function schedulePattern() {
+      const now = ctx.currentTime;
+      for(let b=0;b<8;b++) {
+        const bt=now+b*beat+0.05;
+        if(b===0||b===4) kick(bt);
+        if(b===3) kick(bt+beat*0.75);
+        if(b===2||b===6) snare(bt);
+        hat(bt); hat(bt+beat*0.5);
+      }
+    }
+    schedulePattern();
+    const iv = setInterval(()=>{ if(!soundPlaying){clearInterval(iv);return;} schedulePattern(); }, bar*2*1000);
+    nodes._chirpInterval = iv;
+
+    // Vinyl crackle
+    const crackle = makePinkNoise(ctx,3); crackle.start(); nodes.push(crackle);
+    const hp2 = ctx.createBiquadFilter(); hp2.type='highpass'; hp2.frequency.value=8000;
+    const gc = ctx.createGain(); gc.gain.value=0.025;
+    crackle.connect(hp2); hp2.connect(gc); gc.connect(master);
+
+    // Warm Fmaj7 chord pad: F3 A3 C4 E4
+    [[174.6,0.06],[220,0.05],[261.6,0.04],[329.6,0.035]].forEach(([f,a])=>{
+      const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=f;
+      const g=ctx.createGain(); g.gain.value=a;
+      const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1200;
+      o.connect(lp); lp.connect(g); g.connect(master);
+      o.start(); nodes.push(o);
+    });
+  }
+
+  // ── BIRDSONG: sparse scheduled chirps ONLY (no noise floor) — bright,
+  //   airy, and completely unlike the continuous-texture sounds ─────────────
+  else if (type === 'birds') {
+    // Three distinct bird species: warbler, robin, wren
+    function warbler(when, baseFreq, amp) {
+      // Rapid ascending trill
+      for(let i=0;i<6;i++) {
+        const o=ctx.createOscillator(); o.type='sine';
+        const f=baseFreq*(1+i*0.06);
+        const w=when+i*0.055;
+        o.frequency.setValueAtTime(f,w);
+        o.frequency.linearRampToValueAtTime(f*1.08,w+0.04);
+        const g=ctx.createGain(); g.gain.setValueAtTime(0,w);
+        g.gain.linearRampToValueAtTime(amp,w+0.015);
+        g.gain.setTargetAtTime(0,w+0.035,0.018);
+        o.connect(g); g.connect(master);
+        o.start(w); o.stop(w+0.12);
+      }
+    }
+    function robin(when, freq, amp) {
+      // Smooth descending slur
+      const o=ctx.createOscillator(); o.type='sine';
+      o.frequency.setValueAtTime(freq,when);
+      o.frequency.linearRampToValueAtTime(freq*0.72,when+0.35);
+      const g=ctx.createGain(); g.gain.setValueAtTime(0,when);
+      g.gain.linearRampToValueAtTime(amp,when+0.05);
+      g.gain.setTargetAtTime(0,when+0.2,0.08);
+      o.connect(g); g.connect(master);
+      o.start(when); o.stop(when+0.5);
+    }
+    function wren(when, freq, amp) {
+      // High staccato pair
+      [0,0.1].forEach(dt=>{
+        const o=ctx.createOscillator(); o.type='triangle';
+        o.frequency.setValueAtTime(freq+dt*300,when+dt);
+        const g=ctx.createGain(); g.gain.setValueAtTime(0,when+dt);
+        g.gain.linearRampToValueAtTime(amp,when+dt+0.02);
+        g.gain.setTargetAtTime(0,when+dt+0.05,0.025);
+        o.connect(g); g.connect(master);
+        o.start(when+dt); o.stop(when+dt+0.18);
+      });
+    }
+    // Very faint breeze underneath (barely audible — won't muddy the chirps)
+    const pink=makePinkNoise(ctx,6); pink.start(); nodes.push(pink);
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=500;
+    const gp=ctx.createGain(); gp.gain.value=0.05;
+    pink.connect(lp); lp.connect(gp); gp.connect(master);
+
+    function scheduleBirds() {
+      const now = ctx.currentTime;
+      const events = [
+        [0.3,   ()=>warbler(now+0.3,  3200, 0.20)],
+        [2.5,   ()=>robin(  now+2.5,  1800, 0.16)],
+        [5.1,   ()=>wren(   now+5.1,  4200, 0.14)],
+        [7.8,   ()=>warbler(now+7.8,  2800, 0.18)],
+        [10.2,  ()=>robin(  now+10.2, 2000, 0.15)],
+        [13.0,  ()=>wren(   now+13.0, 4800, 0.13)],
+        [14.6,  ()=>warbler(now+14.6, 3500, 0.17)],
+        [17.5,  ()=>robin(  now+17.5, 1600, 0.14)],
+        [20.3,  ()=>wren(   now+20.3, 5000, 0.12)],
+        [22.0,  ()=>warbler(now+22.0, 3000, 0.19)],
+        [24.8,  ()=>robin(  now+24.8, 2200, 0.15)],
+        [27.4,  ()=>wren(   now+27.4, 4500, 0.13)],
+      ];
+      events.forEach(([,fn])=>fn());
+    }
+    scheduleBirds();
+    const iv=setInterval(()=>{ if(!soundPlaying){clearInterval(iv);return;} scheduleBirds(); },30000);
+    nodes._chirpInterval=iv;
+  }
+
+  return nodes;
+}
+
+function startAmbientSound(vol) {
+  if (!selectedSound) return;
+  stopAmbientSound();
+  soundNodes = buildSoundGraph(selectedSound, vol == null ? 0.22 : vol);
+  soundPlaying = true;
+  updateSoundBar();
+}
+
+function stopAmbientSound() {
+  // Clear any scheduled chirp / beat interval first
+  if (soundNodes._chirpInterval != null) {
+    clearInterval(soundNodes._chirpInterval);
+    soundNodes._chirpInterval = null;
+  }
+  soundNodes.forEach(n => { try { n.stop ? n.stop() : n.disconnect(); } catch(e){} });
+  soundNodes = [];
+  soundPlaying = false;
+  updateSoundBar();
+}
+
+function setSoundVolume(vol) {
+  if (soundNodes.length) {
+    const master = soundNodes[0];
+    if (master && master.gain) master.gain.setTargetAtTime(vol, getAudioCtx().currentTime, 0.5);
+  }
+}
+
+function toggleSound() {
+  if (!selectedSound) return;
+  if (soundPlaying) {
+    stopAmbientSound();
+  } else {
+    startAmbientSound(0.22);
+  }
+  updateSoundBar();
+}
+
+function updateSoundBar() {
+  const bar = document.getElementById('sound-bar');
+  if (!selectedSound) { bar.style.display = 'none'; return; }
+  bar.style.display = 'flex';
+  document.getElementById('sound-bar-name').textContent = SOUND_DEFS[selectedSound].label;
+  document.getElementById('sound-toggle-btn').textContent = soundPlaying ? '⏸ Pause' : '▶ Play';
+}
+
+function selectSound(key) {
+  const wasPlaying = soundPlaying;
+  // Stop current audio before switching
+  if (soundPlaying) stopAmbientSound();
+  selectedSound = key;
+  // Update home-screen chips
+  document.querySelectorAll('.sound-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.sound === key);
+  });
+  const noneBtn = document.getElementById('sound-none-btn');
+  if (noneBtn) noneBtn.classList.toggle('active', !key);
+  // If workout is running and a new sound was chosen, start it immediately
+  if (wasPlaying && key) startAmbientSound(0.22);
+  updateSoundBar();
+}
+
+// ── Duration ────────────────────────────────────────────────────────
+const TOTAL_OPTIONS = { 30: 30, 60: 60 };
+let selectedDuration = 30;
+let TOTAL = selectedDuration;
+
+function setDuration(secs) {
+  selectedDuration = secs;
+  TOTAL = secs;
+  document.getElementById('dur-30').classList.toggle('active', secs === 30);
+  document.getElementById('dur-60').classList.toggle('active', secs === 60);
+}
+
+const CIRCUMFERENCE = 2 * Math.PI * 70;
+
+let currentIdx = 0;
+let timeLeft = TOTAL;
+let timerInterval = null;
+let isPaused = false;
+let repeatCount = 0;
+let completedCount = 0;
+let totalRepeats = 0;
+let breakInterval = null;
+let completedNames = [];
+let sessionStartTime = 0;
+let voiceCoachInterval = null;
+
+function getTodayKey() {
+  return "rawha_" + new Date().toISOString().slice(0,10);
+}
+function saveProgress() {
+  localStorage.setItem(getTodayKey(), JSON.stringify({
+    completed: completedCount,
+    repeats: totalRepeats,
+    names: completedNames
+  }));
+}
+function loadProgress() {
+  try {
+    const d = JSON.parse(localStorage.getItem(getTodayKey()));
+    return d || { completed: 0, repeats: 0, names: [] };
+  } catch { return { completed: 0, repeats: 0, names: [] }; }
+}
+
+function showScreen(id) {
+  const screens = document.querySelectorAll('.screen');
+  screens.forEach(s => {
+    if (s.classList.contains('active')) {
+      s.classList.add('fading');
+      setTimeout(() => { s.classList.remove('active','fading'); }, 300);
+    }
+  });
+  setTimeout(() => {
+    const next = document.getElementById(id);
+    if (next) next.classList.add('active');
+  }, 200);
+}
+
+function updateHomeScreen() {
+  const p = loadProgress();
+  document.getElementById('home-completed').textContent = p.completed;
+  document.getElementById('home-repeats').textContent = p.repeats;
+  const pct = Math.min(100, Math.round((p.completed / EXERCISES.length) * 100));
+  document.getElementById('home-progress-bar').style.width = pct + '%';
+  document.getElementById('home-progress-label').textContent = p.completed + ' / ' + EXERCISES.length;
+}
+
+function updateExerciseUI() {
+  document.getElementById('ex-number').textContent = (currentIdx + 1) + ' / ' + EXERCISES.length;
+  document.getElementById('ex-name').textContent = EXERCISES[currentIdx];
+  const pct = Math.min(100, Math.round((completedCount / EXERCISES.length) * 100));
+  document.getElementById('ex-progress-bar').style.width = pct + '%';
+  document.getElementById('ex-progress-label').textContent = completedCount + ' / ' + EXERCISES.length;
+  const badge = document.getElementById('repeat-badge');
+  if (repeatCount > 0) {
+    badge.style.display = 'inline-flex';
+    document.getElementById('repeat-count').textContent = repeatCount;
+  } else {
+    badge.style.display = 'none';
+  }
+  const nextUpEl = document.getElementById('next-up-name');
+  const nextIdx = currentIdx + 1;
+  if (nextIdx < EXERCISES.length) {
+    nextUpEl.textContent = EXERCISES[nextIdx];
+    nextUpEl.className = 'next-up-name';
+  } else {
+    nextUpEl.textContent = 'Routine complete — amazing work!';
+    nextUpEl.className = 'next-up-name soft';
+  }
+  updateSoundBar();
+}
+
+function updateTimerUI() {
+  document.getElementById('timer-display').textContent = timeLeft;
+  const offset = CIRCUMFERENCE * (1 - timeLeft / TOTAL);
+  document.getElementById('timer-arc').style.strokeDashoffset = offset;
+  // Pulse faster as timer nears end
+  const circle = document.getElementById('timer-circle');
+  if (circle) circle.classList.toggle('pulsing', timeLeft <= 10);
+}
+
+function startVoiceCoach() {
+  clearInterval(voiceCoachInterval);
+  // Show a prompt roughly every 12–18 seconds
+  voiceCoachInterval = setInterval(() => {
+    if (!isPaused) {
+      const msg = VOICE_PROMPTS[Math.floor(Math.random() * VOICE_PROMPTS.length)];
+      showVoiceToast(msg);
+    }
+  }, 14000);
+}
+
+function stopVoiceCoach() {
+  clearInterval(voiceCoachInterval);
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  isPaused = false;
+  document.getElementById('btn-pause').textContent = '⏸ Pause';
+  timerInterval = setInterval(() => {
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      onExerciseDone();
+      return;
+    }
+    timeLeft--;
+    updateTimerUI();
+  }, 1000);
+}
+
+function pauseTimer() {
+  clearInterval(timerInterval);
+  isPaused = true;
+  document.getElementById('btn-pause').textContent = '▶ Resume';
+}
+
+function onExerciseDone() {
+  if (pendingRepeat) {
+    pendingRepeat = false;
+    timeLeft = TOTAL;
+    const btn = document.getElementById('btn-repeat');
+    btn.textContent = '🔁 Repeat';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    updateExerciseUI();
+    updateTimerUI();
+    startTimer();
+    return;
+  }
+  completedCount++;
+  completedNames.push(EXERCISES[currentIdx]);
+  saveProgress();
+  if (currentIdx + 1 >= EXERCISES.length) {
+    showSummary();
+    return;
+  }
+  const nextIdx = currentIdx + 1;
+  if (nextIdx % 3 === 0) {
+    startBreak(nextIdx);
+  } else {
+    moveToExercise(nextIdx);
+  }
+}
+
+function moveToExercise(idx) {
+  currentIdx = idx;
+  repeatCount = 0;
+  pendingRepeat = false;
+  const btn = document.getElementById('btn-repeat');
+  btn.textContent = '🔁 Repeat';
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  timeLeft = TOTAL;
+  updateExerciseUI();
+  updateTimerUI();
+  startTimer();
+  // Random voice prompt on new exercise ~50% chance
+  if (Math.random() > 0.5) {
+    setTimeout(() => {
+      showVoiceToast(VOICE_PROMPTS[Math.floor(Math.random() * VOICE_PROMPTS.length)]);
+    }, 1500);
+  }
+}
+
+const BREAK_DURATION = 20;
+const BREAK_CIRCUMFERENCE = 2 * Math.PI * 65;
+
+function startBreak(nextIdx) {
+  stopVoiceCoach();
+  // Lower ambient volume during break
+  setSoundVolume(0.10);
+
+  showScreen('screen-break');
+  document.getElementById('break-next-name').textContent = EXERCISES[nextIdx] || '—';
+  const arc = document.getElementById('break-arc');
+  arc.style.strokeDasharray = BREAK_CIRCUMFERENCE;
+  arc.style.strokeDashoffset = 0;
+
+  let breakTime = BREAK_DURATION;
+  document.getElementById('break-timer-display').textContent = breakTime;
+  clearInterval(breakInterval);
+
+  // Show a break-specific prompt after 3s
+  setTimeout(() => {
+    showVoiceToast(BREAK_PROMPTS[Math.floor(Math.random() * BREAK_PROMPTS.length)]);
+  }, 3000);
+
+  breakInterval = setInterval(() => {
+    breakTime--;
+    document.getElementById('break-timer-display').textContent = breakTime;
+    const pct = breakTime / BREAK_DURATION;
+    arc.style.strokeDashoffset = BREAK_CIRCUMFERENCE * (1 - pct);
+    if (breakTime <= 0) {
+      clearInterval(breakInterval);
+      setSoundVolume(0.22);
+      showScreen('screen-exercise');
+      moveToExercise(nextIdx);
+      startVoiceCoach();
+    }
+  }, 1000);
+
+  document.getElementById('btn-skip-break').onclick = () => {
+    clearInterval(breakInterval);
+    setSoundVolume(0.22);
+    showScreen('screen-exercise');
+    moveToExercise(nextIdx);
+    startVoiceCoach();
+  };
+}
+
+function formatTime(ms) {
+  const totalSec = Math.round(ms / 1000);
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function showSummary() {
+  clearInterval(timerInterval);
+  stopVoiceCoach();
+  stopAmbientSound();
+  showScreen('screen-summary');
+  document.getElementById('sum-completed').textContent = completedCount;
+  document.getElementById('sum-repeats').textContent = totalRepeats;
+  const elapsed = sessionStartTime ? Date.now() - sessionStartTime : 0;
+  document.getElementById('sum-time').textContent = formatTime(elapsed);
+  const msg = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
+  document.getElementById('summary-message').textContent = msg;
+  const row = document.getElementById('sum-exercises-done');
+  row.innerHTML = completedNames.map(n => `<span class="chip">${n}</span>`).join('');
+  // Celebration toast
+  setTimeout(() => showVoiceToast("That's your Rawha moment today. So proud of you 🌟"), 800);
+}
+
+function startSession() {
+  // Resume audio context if suspended (browser autoplay policy)
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+  TOTAL = selectedDuration;
+  completedCount = 0;
+  totalRepeats = 0;
+  completedNames = [];
+  currentIdx = 0;
+  repeatCount = 0;
+  pendingRepeat = false;
+  const btn = document.getElementById('btn-repeat');
+  btn.textContent = '🔁 Repeat';
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  timeLeft = TOTAL;
+  sessionStartTime = Date.now();
+  document.getElementById('timer-arc').setAttribute('stroke-dasharray', CIRCUMFERENCE);
+  document.getElementById('ex-duration-label').textContent = TOTAL + ' sec per exercise';
+  showScreen('screen-exercise');
+  updateExerciseUI();
+  updateTimerUI();
+  startTimer();
+  startVoiceCoach();
+  startAmbientSound(0.22);
+  // Welcome prompt
+  setTimeout(() => showVoiceToast("Welcome to Rawha. Move gently, feel lighter. 🌸"), 1200);
+}
+
+document.getElementById('btn-start-home').addEventListener('click', startSession);
+
+document.getElementById('btn-pause').addEventListener('click', () => {
+  if (isPaused) startTimer(); else pauseTimer();
+});
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  clearInterval(timerInterval);
+  onExerciseDone();
+});
+
+let pendingRepeat = false;
+
+document.getElementById('btn-repeat').addEventListener('click', () => {
+  if (pendingRepeat) return;
+  pendingRepeat = true;
+  repeatCount++;
+  totalRepeats++;
+  saveProgress();
+  updateExerciseUI();
+  const btn = document.getElementById('btn-repeat');
+  btn.textContent = '🔁 Queued!';
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+});
+
+document.getElementById('btn-finish-early').addEventListener('click', () => {
+  clearInterval(timerInterval);
+  showSummary();
+});
+
+document.getElementById('btn-restart').addEventListener('click', startSession);
+
+document.getElementById('btn-go-home').addEventListener('click', () => {
+  clearInterval(timerInterval);
+  stopVoiceCoach();
+  stopAmbientSound();
+  updateHomeScreen();
+  showScreen('screen-home');
+});
+
+updateHomeScreen();
+
+</script>
+</body>
+</html>
