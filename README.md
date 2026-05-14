@@ -9,6 +9,7 @@
 **Tech stack:** HTML5 · CSS3 · Vanilla JavaScript · Web Audio API · localStorage  
 **File architecture:** Everything lives in one self-contained `.html` file — no build step, no dependencies, no server needed. Open in any browser and it works.
 
+Link: https://rawha.netlify.app/ 
 ---
 
 ## 2. Core Features Implemented
