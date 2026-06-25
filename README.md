@@ -1,5 +1,7 @@
 # Rawha — Project Feature Summary
 
+<img width="2848" height="1738" alt="rawha-cover (2)" src="https://github.com/user-attachments/assets/7d56e005-bc24-4d1b-aadc-240f29c8b51a" />
+
 ---
 
 ## 1. Project Overview
